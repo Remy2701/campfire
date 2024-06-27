@@ -1,4 +1,4 @@
-# dmp3s
+# Campfire
 
 Decentralized Matchmaking Platform - 3S
 
