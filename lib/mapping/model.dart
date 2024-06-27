@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dmp3s/mapping/skill.dart';
 import 'package:dmp3s/mapping/_single.dart';
 import 'package:dmp3s/mapping/_dual.dart';
@@ -57,4 +59,12 @@ Map<Skill, int> run(String input) {
   }
 
   return result;
+}
+
+int computeMatchmakingScore(Map<Skill, int> a, Map<Skill, int> b) {
+  int score = 0;
+  for (final skill in Skill.values) {
+    score += min(a[skill] ?? 0, b[skill] ?? 0);
+  }
+  return score;
 }

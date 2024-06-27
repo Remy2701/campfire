@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:dmp3s/common/api/relay/pool.dart';
 import 'package:dmp3s/common/model/challenge.dart';
+import 'package:dmp3s/common/model/user_info.dart';
 import 'package:dmp3s/common/widget/challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:nostr/nostr.dart';
+import 'package:dmp3s/mapping/model.dart' as skill_model;
 
 /// The discover page of the application
 class DiscoverPage extends StatefulWidget {
@@ -31,9 +35,22 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   /// The conrtoller for the search bar.
   final SearchController _searchController = SearchController();
+  final Completer<UserInfo> _userInfo = Completer();
 
   /// Load the challenges from the relay.
   void _loadChallenges() {
+    RelayPool.instance.listen(
+      request: UserInfo.getRequest(widget.keychain.public),
+      onEvent: (event) {
+        final info = UserInfo.fromEvent(event);
+        _userInfo.complete(info);
+        final skills = skill_model.run(info.description ?? "");
+        _challenges.sort((a, b) => -skill_model.computeMatchmakingScore(a.computePoints, skills).compareTo(
+              skill_model.computeMatchmakingScore(b.computePoints, skills),
+            ));
+        setState(() {});
+      },
+    );
     RelayPool.instance.listen(
       request: Challenge.getChallengesRequest(
         search: _searchController.text.isEmpty ? null : _searchController.text,
@@ -46,7 +63,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         if (!mounted) return;
 
         /// Add the challenge to the list.
-        setState(() => _challenges.add(Challenge.fromEvent(event)));
+        _challenges.add(Challenge.fromEvent(event));
+        _userInfo.future.then((info) {
+          final skills = skill_model.run(info.description ?? "");
+          _challenges.sort((a, b) => skill_model.computeMatchmakingScore(a.computePoints, skills).compareTo(
+                skill_model.computeMatchmakingScore(b.computePoints, skills),
+              ));
+        });
+        setState(() {});
       },
     );
   }

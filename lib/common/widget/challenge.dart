@@ -43,7 +43,7 @@ class ChallengeCard extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        height: 148.0,
+        height: 156.0,
         decoration: BoxDecoration(
           color: getTheme() == ThemeMode.dark ? const Color(0xFF1A1A1A) : const Color(0xFFEEEEEE),
           borderRadius: BorderRadius.circular(12.0),
@@ -117,8 +117,8 @@ class ChallengeCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${challenge.description}\n\n\n",
-                    maxLines: 3,
+                    "${challenge.description}\n\n",
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: getTheme() == ThemeMode.dark ? const Color(0xFFEEEEEE) : const Color(0xFF1A1A1A),

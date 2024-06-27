@@ -1,5 +1,7 @@
 import 'package:dmp3s/common/api/kinds.dart';
+import 'package:dmp3s/mapping/skill.dart';
 import 'package:nostr/nostr.dart';
+import 'package:dmp3s/mapping/model.dart' as skill_model;
 
 enum RewardType {
   bitcoin,
@@ -27,6 +29,8 @@ class Challenge {
   final String description;
   final List<String> tags;
   final List<Reward> rewards;
+
+  Map<Skill, int> get computePoints => skill_model.run("$title\n\n$description\n\n${tags.join(" ")}");
 
   Event toEvent(Keychain author) {
     return Event.from(

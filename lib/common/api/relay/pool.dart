@@ -25,7 +25,9 @@ class RelayPool {
 
   /// Initialize the relays.
   void _initRelays() {
-    addRelay('wss://relay.blackbyte.nl');
+    // addRelay('wss://relay.blackbyte.nl');
+    // addRelay('wss://relay.nostromo.social');
+    addRelay('wss://nostr.stakey.net');
   }
 
   /// Add a new relay to the pool.
@@ -52,7 +54,8 @@ class RelayPool {
 
     if (!success) {
       // If we reach this point, we could not send the event to any relay
-      _logger.e("Failed to send event (kind: ${event.kind}, content: ${event.content}) to any relay in the pool!");
+      _logger.e(
+          "Failed to send event (kind: ${event.kind}, content: ${event.content}) to any relay in the pool!");
     }
   }
 
@@ -66,7 +69,8 @@ class RelayPool {
     bool success = false;
     for (final url in urls) {
       final relay = Relay(url: url);
-      if (await relay.listen(request: request, onEvent: onEvent, onFinished: onFinished)) {
+      if (await relay.listen(
+          request: request, onEvent: onEvent, onFinished: onFinished)) {
         success = true;
       }
     }

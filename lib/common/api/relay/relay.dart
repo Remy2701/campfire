@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:web_socket_channel/web_socket_channel.dart';
 import "package:nostr/nostr.dart";
 import 'package:logger/logger.dart';
@@ -53,6 +55,7 @@ class Relay {
 
     // List to the response (should be an OK message)
     var success = true;
+    final completer = Completer<void>();
     _channel!.stream.listen((e) {
       final message = Message.deserialize(e);
       if (message.messageType != MessageType.ok) {
@@ -62,10 +65,16 @@ class Relay {
         );
         success = false;
         return;
+      } else {
+        _logger.d(
+          "Event (kind: ${event.kind}, content: ${event.content}) successfully "
+          "sent to relay ($url)!",
+        );
+        completer.complete();
       }
     });
 
-    _logger.i("Event (kind: ${event.kind}, content: ${event.content}) sent to relay ($url)!");
+    await completer.future;
 
     // Close the connection
     await _close();
@@ -101,7 +110,7 @@ class Relay {
       final message = Message.deserialize(e);
       _logger.d("Message received from '$url': ${message.messageType}");
       if (message.messageType == MessageType.eose) {
-        _logger.i("Connection to relay ($url) closed!");
+        _logger.d("Connection to relay ($url) closed!");
         onFinished?.call();
         await _close();
         return;

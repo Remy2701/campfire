@@ -4,7 +4,8 @@ import 'package:nostr/nostr.dart';
 
 /// The information of a user.
 class UserInfo {
-  const UserInfo({this.firstName, this.lastName, this.anonymous, this.description})
+  const UserInfo(
+      {this.firstName, this.lastName, this.anonymous, this.description})
       : assert(firstName != null || lastName != null || anonymous != null);
 
   final String? firstName;
@@ -29,10 +30,18 @@ class UserInfo {
 
   /// Create a [UserInfo] from the given [Event].
   static UserInfo fromEvent(Event event) {
-    final firstName = event.tags.firstWhereOrNull((tag) => tag[0] == "firstName")?.elementAt(1);
-    final lastName = event.tags.firstWhereOrNull((tag) => tag[0] == "lastName")?.elementAt(1);
-    final anonymous = event.tags.firstWhereOrNull((tag) => tag[0] == "anonymous")?.elementAt(1);
-    final description = event.tags.firstWhereOrNull((tag) => tag[0] == "description")?.elementAt(1);
+    final firstName = event.tags
+        .firstWhereOrNull((tag) => tag[0] == "firstName")
+        ?.elementAt(1);
+    final lastName = event.tags
+        .firstWhereOrNull((tag) => tag[0] == "lastName")
+        ?.elementAt(1);
+    final anonymous = event.tags
+        .firstWhereOrNull((tag) => tag[0] == "anonymous")
+        ?.elementAt(1);
+    final description = event.tags
+        .firstWhereOrNull((tag) => tag[0] == "description")
+        ?.elementAt(1);
 
     return UserInfo(
       firstName: firstName,

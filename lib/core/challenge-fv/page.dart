@@ -1,8 +1,10 @@
+import 'package:dmp3s/common/api/ai/ai.dart';
 import 'package:dmp3s/common/api/kinds.dart';
 import 'package:dmp3s/common/api/relay/pool.dart';
 import 'package:dmp3s/common/model/challenge.dart';
 import 'package:dmp3s/common/widget/challenge.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:nostr/nostr.dart';
 
@@ -120,6 +122,89 @@ class _ChallengePageState extends State<ChallengePage> {
                 ),
               ),
             ],
+          ),
+          Positioned(
+            bottom: 8.0,
+            width: 45.0,
+            right: 8.0,
+            height: 45.0,
+            child: GestureDetector(
+              onTap: () async {
+                final prompt = PromptGenerator.instance.generate(
+                  title: widget.challenge.title,
+                  description: widget.challenge.description,
+                );
+                await showDialog(
+                  context: context,
+                  builder: (context) => SimpleDialog(
+                    title: const Text("Generated promp"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    children: [
+                      FutureBuilder(
+                        future: prompt,
+                        builder: (context, snapshot) => snapshot.hasData
+                            ? ListTile(
+                                title: Text(snapshot.data!,
+                                    style: TextStyle(
+                                      color: widget.getTheme() == ThemeMode.dark
+                                          ? const Color(0xFFEEEEEE)
+                                          : const Color(0xFF1A1A1A),
+                                    )),
+                                onTap: () async {
+                                  // Set ... to clipboard
+                                  Clipboard.setData(ClipboardData(text: snapshot.data!)).then(
+                                    (_) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Prompt copied!"),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                            : const Center(child: CircularProgressIndicator()),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF7349),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Icon(
+                  Boxicons.bxs_magic_wand,
+                  color: Colors.white,
+                  size: 24.0,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 8.0,
+            left: 8.0,
+            right: 8.0 + 45.0 + 8.0,
+            height: 45.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF9D9D9D),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: const Center(
+                child: Text(
+                  "Register",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
           ),
           Positioned(
             top: 8.0,
